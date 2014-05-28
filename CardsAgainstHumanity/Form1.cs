@@ -13,7 +13,7 @@ using System.IO;
 //NONE - game not playing, PLAY - players choosing card to play, CZAR - czar choosing best, WAIT - period between turns
 namespace CardsAgainstHumanity
 {
-    enum gamestate { NONE, PLAY, CHOOSE, WAIT }
+	enum gamestate { NONE, PLAY, CHOOSE, WAIT }
 	public partial class MainWindow : Form
 	{
 		private CardsAgainstHumanityGame theGame;
@@ -40,7 +40,7 @@ namespace CardsAgainstHumanity
 		public Queue<List<string>> commoutqueue;
 		public Queue<List<string>> comminqueue;
 
-        public player2 playerform;
+		public player2 playerform;
 
 		public List<string> hand;
 		public int points;
@@ -69,7 +69,7 @@ namespace CardsAgainstHumanity
 			points = 1;
 			name = Name;
 			playedcard = false;
-            playerform = new player2();
+			playerform = new player2();
 		}
 
 	}
@@ -127,14 +127,14 @@ namespace CardsAgainstHumanity
 
 		//private Thread[] threads;
 
-        public TwoDecks getDecks()
-        {
-            TwoDecks ret = new TwoDecks();
-            ret.W = whtdeck;
-            ret.B = blkdeck;
-            return ret;
+		public TwoDecks getDecks()
+		{
+			TwoDecks ret = new TwoDecks();
+			ret.W = whtdeck;
+			ret.B = blkdeck;
+			return ret;
 
-        }
+		}
 		private string blkcard; public string black { get { return blkcard; } }
 		private int czarplayerid; public int czarid { get { return czarplayerid; } }
 
@@ -162,24 +162,24 @@ namespace CardsAgainstHumanity
 			loadCardDecks(blkcardsfile, whtcardsfile);
 			rng = new Random();
 			players = new List<player>();
-            
+			
 			czarplayerid = rng.Next() % numplayers;
 			playedthisturn = new List<string>();
 
 
 			for (int i = 0; i < numplayers; i++)
-			    { players.Add(new player("Brian")); }
-            foreach (player p in players)
-            {
-                p.playerform.thegame = this;
-            }
-            fillHands();
+				{ players.Add(new player("Brian")); }
+			foreach (player p in players)
+			{
+				p.playerform.thegame = this;
+			}
+			fillHands();
 
-            foreach (player p in players)
-            {
-                p.playerform.spreadHandButtonsAcrossScreen();
-                p.playerform.Show();
-            }
+			foreach (player p in players)
+			{
+				p.playerform.spreadHandButtonsAcrossScreen();
+				p.playerform.Show();
+			}
 
 			/*threads = new Thread[numplayers-1];
 			
@@ -189,7 +189,7 @@ namespace CardsAgainstHumanity
 			}*/
 			
 		}
-        
+		
 		public List<string> getHand(int player)
 		{
 			return players[player].hand;
@@ -228,10 +228,10 @@ namespace CardsAgainstHumanity
 				blkdeck.discard.Add(blkcard);
 			blkcard = blkdeck.drawFrom();
 
-            foreach (player p in players)
-            {
-                p.playerform.refreshHand();
-            }
+			foreach (player p in players)
+			{
+				p.playerform.refreshHand();
+			}
 		}
 		private void fillHands()
 		{
