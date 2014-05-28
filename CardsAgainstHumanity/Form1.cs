@@ -9,10 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-enum gamestate { NONE, PLAY, CHOOSE, WAIT }
+
 //NONE - game not playing, PLAY - players choosing card to play, CZAR - czar choosing best, WAIT - period between turns
 namespace CardsAgainstHumanity
 {
+    enum gamestate { NONE, PLAY, CHOOSE, WAIT }
 	public partial class MainWindow : Form
 	{
 		private CardsAgainstHumanityGame theGame;
@@ -126,6 +127,14 @@ namespace CardsAgainstHumanity
 
 		//private Thread[] threads;
 
+        public TwoDecks getDecks()
+        {
+            TwoDecks ret = new TwoDecks();
+            ret.W = whtdeck;
+            ret.B = blkdeck;
+            return ret;
+
+        }
 		private string blkcard; public string black { get { return blkcard; } }
 		private int czarplayerid; public int czarid { get { return czarplayerid; } }
 
