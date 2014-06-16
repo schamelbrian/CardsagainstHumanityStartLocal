@@ -13,7 +13,7 @@ using System.IO;
 //NONE - game not playing, PLAY - players choosing card to play, CZAR - czar choosing best, WAIT - period between turns
 namespace CardsAgainstHumanity
 {
-	enum gamestate { NONE, PLAY, CHOOSE, WAIT }
+	public enum gamestate { NONE, PLAY, CZAR, WAIT }
 	public partial class MainWindow : Form
 	{
 		private CardsAgainstHumanityGame theGame;
@@ -37,12 +37,9 @@ namespace CardsAgainstHumanity
 	}
 	public class player
 	{
-		public Queue<List<string>> commoutqueue;
-		public Queue<List<string>> comminqueue;
-
 		public player2 playerform;
 
-		public List<string> hand;
+		public List<int> hand;
 		public int points;
 		public string name;
 		private bool playedcard;
@@ -65,7 +62,7 @@ namespace CardsAgainstHumanity
 		{
 			playerID = IDmaker;
 			IDmaker++;
-			hand = new List<string>();
+			hand = new List<int>();
 			points = 1;
 			name = Name;
 			playedcard = false;
@@ -77,24 +74,32 @@ namespace CardsAgainstHumanity
 	{
 		private Random rng;
 		private string[] allcards;
-		public List<string> discard;
-		public Queue<string> cardsleft;
+		public List<int> discard;
+		public Queue<int> cardsleft;
 
+        public string[] decklist
+        {
+            get { return allcards; }
+        }
 		public Deck() { ;}
 		public Deck(string deckfile)
 		{
 			rng = new Random();
-			discard = new List<string>();
-			cardsleft = new Queue<string>();
+			discard = new List<int>();
+			cardsleft = new Queue<int>();
 			allcards = System.IO.File.ReadAllLines(deckfile);
-			foreach (string card in allcards)
-			{
-				discard.Add(card);
-			}
+            for (int card = 0; card < allcards.Count(); card++ )
+            {
+                discard.Add(card);
+            }
 			shuffle();
 
 		}
-
+        
+        public string this[int index]
+        {
+            get { return allcards[index]; }
+        }
 		//puts discard on bottom of deck in random order
 		public void shuffle()
 		{
@@ -105,7 +110,7 @@ namespace CardsAgainstHumanity
 				discard.RemoveAt(index);
 			}
 		}
-		public string drawFrom()
+		public int drawFrom()
 		{
 			if (cardsleft.Count == 0)
 				shuffle();
@@ -116,33 +121,30 @@ namespace CardsAgainstHumanity
 	public partial class CardsAgainstHumanityGame
 	{
 
-		private Deck whtdeck;
-		private Deck blkdeck;
+		public Deck whtdeck;
+		public Deck blkdeck;
+
 
 		private Random rng;
 		private int handsize;
-		private List<player> players;
-		private List<string> playedthisturn;//cards played this turn
+		public List<player> players;
+		public List<int> playedthisturn;//cards played this turn
 		private const int HOSTPLAYER = 0;
+
+        public int MAXPLAYERS = 15;
 
 		//private Thread[] threads;
 
-		public TwoDecks getDecks()
-		{
-			TwoDecks ret = new TwoDecks();
-			ret.W = whtdeck;
-			ret.B = blkdeck;
-			return ret;
-
-		}
-		private string blkcard; public string black { get { return blkcard; } }
+		private int blkcard; public int black { get { return blkcard; } }
 		private int czarplayerid; public int czarid { get { return czarplayerid; } }
 
-		public List<string> getdiscard()
+        public gamestate gstate;
+
+		public List<int> getdiscard()
 		{
 			return whtdeck.discard;
 		}
-		public Queue<string> getdeckleft()
+		public Queue<int> getdeckleft()
 		{
 			return whtdeck.cardsleft;
 		}
@@ -164,7 +166,7 @@ namespace CardsAgainstHumanity
 			players = new List<player>();
 			
 			czarplayerid = rng.Next() % numplayers;
-			playedthisturn = new List<string>();
+			playedthisturn = new List<int>();
 
 
 			for (int i = 0; i < numplayers; i++)
@@ -180,22 +182,25 @@ namespace CardsAgainstHumanity
 				p.playerform.spreadHandButtonsAcrossScreen();
 				p.playerform.Show();
 			}
-
-			/*threads = new Thread[numplayers-1];
-			
-			for (int i = 1; i < numplayers; i++) //set up threads initially
-			{
-				threads[i] = new Thread(threadcomm);
-			}*/
 			
 		}
-		
-		public List<string> getHand(int player)
+
+        public int addPlayer(string name)
+        {
+            if (players.Count >= MAXPLAYERS)
+            {
+                players.Add(new player(name));
+                return players.Count - 1;
+            }
+            return -1;
+        }
+		public List<int> getHand(int player)
 		{
 			return players[player].hand;
 		}
 		
-		public void playcard(int player, string card)
+       
+		public void playcard(int player, int card)
 		{
 			if (players[player].play())
 			{
@@ -209,6 +214,8 @@ namespace CardsAgainstHumanity
 				newTurn();
 
 		}
+        
+        
 		private void newTurn()
 		{
 			czarplayerid++;
@@ -216,7 +223,7 @@ namespace CardsAgainstHumanity
 				czarplayerid = 0;
 
 			fillHands();
-			foreach (string card in playedthisturn)
+			foreach (int card in playedthisturn)
 				whtdeck.discard.Add(card);
 
 			playedthisturn.Clear();
@@ -224,8 +231,7 @@ namespace CardsAgainstHumanity
 			{
 				player.unplay();
 			}
-			if (blkcard != null) 
-				blkdeck.discard.Add(blkcard);
+			blkdeck.discard.Add(blkcard);
 			blkcard = blkdeck.drawFrom();
 
 			foreach (player p in players)

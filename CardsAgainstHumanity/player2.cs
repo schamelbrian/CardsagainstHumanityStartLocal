@@ -59,27 +59,28 @@ namespace CardsAgainstHumanity
 			
 
 		}
-		public void showhand(List<string> cards, Queue<string> deck, List<string> discard)
+		public void showhand(List<int> cards, Queue<int> deck, List<int> discard, string[] decklist)
 		{
 			int i = 0;
-			foreach (string card in cards)
+			foreach (int card in cards)
 			{
-				hand[i].Text = card;
+				hand[i].Text = decklist[card];
 				hand[i].Visible = true;
+                hand[i].Tag = card;
 				i++;
 			}
 			while (i < 9)
-			{
+		    {
 				hand[i].Visible = false;
 				i++;
 			}
 
 			listBox1.Items.Clear(); listBox2.Items.Clear();
-			foreach (string card in deck)
-				listBox1.Items.Add(card);
+			foreach (int card in deck)
+				listBox1.Items.Add(decklist[card]);
 
-			foreach (string card in discard)
-				listBox2.Items.Add(card);
+			foreach (int card in discard)
+				listBox2.Items.Add(decklist[card]);
 
 
 		}
@@ -138,16 +139,14 @@ namespace CardsAgainstHumanity
 		}
 		public void refreshHand()
 		{
-			showhand(theGame.getHand(playerID), theGame.getdeckleft(), theGame.getdiscard());
+			showhand(theGame.getHand(playerID), theGame.getdeckleft(), theGame.getdiscard(), theGame.whtdeck.decklist);
 		}
 		private void clickedhandbutton(object sender)
 		{
-			string s = (sender as Button).Text;
+			int s = (int)((sender as Button).Tag);
 			theGame.playcard(playerID, s);
 
-			showhand(theGame.getHand(playerID), theGame.getdeckleft(), theGame.getdiscard());
-
-			label1.Text = "Played: " + s;
+			showhand(theGame.getHand(playerID), theGame.getdeckleft(), theGame.getdiscard(), theGame.whtdeck.decklist);
 		}
 
 

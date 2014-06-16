@@ -47,15 +47,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BScomm.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="GDcomm.cs" />
-    <Compile Include="IService1.cs" />
+    <Compile Include="CAHService.cs" />
     <Compile Include="player2.cs">
       <SubType>Form</SubType>
     </Compile>
